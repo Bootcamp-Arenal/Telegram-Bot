@@ -42,4 +42,44 @@ public class BootcampArenalBot extends TelegramLongPollingBot {
         return "bootcamp_arenal_bot";
     }
 
+	public void BootcampArenalBot() {
+		this.token = this.getBotToken();
+	}
+
+	// @Override
+	// public void onUpdateReceived(Update update) {
+	// 	// TODO Auto-generated method stub
+		
+	// }
+
+	// @Override
+	// public String getBotUsername() {
+	// 	// TODO Auto-generated method stub
+	// 	return null;
+	// }
+
+	// @Override
+	// public String getBotToken() {
+		
+	// 	//Obtener inputstream de carpeta resources
+	// 	ClassLoader classloader = Thread.currentThread().getContextClassLoader();
+	// 	InputStream is = classloader.getResourceAsStream("token.txt");
+		
+    //     StringBuilder sb = new StringBuilder();
+	// 	BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		 
+    //     String line;
+    //     try {
+	// 		while ((line = br.readLine()) != null) {
+	// 		    sb.append(line + System.lineSeparator());
+	// 		}
+	// 	} catch (IOException e) {
+	// 		System.err.println("Error al leer el archivo");
+	// 		e.printStackTrace();
+	// 	}
+        
+    //     return sb.toString();
+
+	// }
+	
 }

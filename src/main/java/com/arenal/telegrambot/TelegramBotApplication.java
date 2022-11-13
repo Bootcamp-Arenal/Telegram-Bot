@@ -11,7 +11,9 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 public class TelegramBotApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TelegramBotApplication.class, args);
+		//SpringApplication.run(TelegramBotApplication.class, args);
+		BootcampArenalBot bot = new BootcampArenalBot();
+		bot.getBotToken();
 	}
 
 }
