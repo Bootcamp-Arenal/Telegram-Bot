@@ -15,10 +15,11 @@ public class BootcampArenalBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (!update.hasMessage() || !update.getMessage().hasText()) {
-            return;
-        }
-        System.out.println(username + " " + token);
+//        if (!update.hasMessage() || !update.getMessage().hasText()) {
+//            return;
+//        }
+        System.out.println("?????????????????");
+        System.out.println(this.getBotUsername() + " " + this.getBotToken());
         SendMessage sendMessage = new SendMessage();
         if (update.getMessage().getText().equals("/start")) {
             sendMessage.setText("Hello, " + update.getMessage().getFrom().getFirstName() + "!");
@@ -42,9 +43,9 @@ public class BootcampArenalBot extends TelegramLongPollingBot {
         return "bootcamp_arenal_bot";
     }
 
-	public void BootcampArenalBot() {
-		this.token = this.getBotToken();
-	}
+//	public void BootcampArenalBot() {
+//		this.token = this.getBotToken();
+//	}
 
 	// @Override
 	// public void onUpdateReceived(Update update) {
