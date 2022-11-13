@@ -25,12 +25,28 @@ import com.google.gson.JsonParser;
 
 @Service
 public class JsonDigestService {
-
-	public Teams digest(String jsonFile) throws FileNotModifiedException {
+	
+	public Teams digestLocal(String jsonFile) throws FileNotModifiedException {
 		List<Team> winningTeams = new ArrayList<>();
-		String file = "";
+		ObjectMapper mapper = new ObjectMapper();
+		Teams teamData = new Teams();
+		try {
+			teamData = mapper.readValue(jsonFile, Teams.class);
 
-		JsonObject root = JsonParser.parseString(jsonFile).getAsJsonObject();
+			int maxTeamScore = maxTeamsScore(teamData);
+			Map<Team, Integer> teamDataMap = initializeTeamDataMap(teamData);
+			winningTeams = getWinningTeams(teamDataMap, maxTeamScore);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return new Teams(winningTeams);
+	}
+
+	public Teams digest(String githubEvent) throws FileNotModifiedException {
+		List<Team> winningTeams = new ArrayList<>();
+		String jsonFile = "";
+
+		JsonObject root = JsonParser.parseString(githubEvent).getAsJsonObject();
 		JsonObject headCommit = root.get("head_commit").getAsJsonObject();
 		JsonArray modified = headCommit.get("modified").getAsJsonArray();
 
@@ -40,11 +56,11 @@ public class JsonDigestService {
 
 		ObjectMapper mapper = new ObjectMapper();
 
-		file = readFile();
+		jsonFile = readFile();
 
 		Teams teamData = new Teams();
 		try {
-			teamData = mapper.readValue(file, Teams.class);
+			teamData = mapper.readValue(jsonFile, Teams.class);
 
 			int maxTeamScore = maxTeamsScore(teamData);
 			Map<Team, Integer> teamDataMap = initializeTeamDataMap(teamData);

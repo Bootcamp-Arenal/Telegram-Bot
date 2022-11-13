@@ -10,13 +10,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 public class TelegramBotApplication {
 
 	public static void main(String[] args) {
-//		SpringApplication.run(TelegramBotApplication.class, args);
-        try {
-            TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-            botsApi.registerBot(new BootcampArenalBot());
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+		SpringApplication.run(TelegramBotApplication.class, args);
 	}
 
 }
