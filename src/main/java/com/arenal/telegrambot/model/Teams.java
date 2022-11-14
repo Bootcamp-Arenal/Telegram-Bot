@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.Objects;
 
 public class Teams{
-	public List<Team> teamData;
+	public List<Team> teamdata;
 
-	public Teams(List<Team> teamData) {
+	public Teams(List<Team> teamdata) {
 		super();
-		this.teamData = teamData;
+		this.teamdata = teamdata;
 	}
 	
 	
@@ -18,16 +18,16 @@ public class Teams{
 
 
 	public List<Team> toList() {
-		return teamData;
+		return teamdata;
 	}
 
-	public void setTeamData(List<Team> teamData) {
-		this.teamData = teamData;
+	public void setTeamdata(List<Team> teamdata) {
+		this.teamdata = teamdata;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(teamData);
+		return Objects.hash(teamdata);
 	}
 
 	@Override
@@ -39,12 +39,12 @@ public class Teams{
 		if (getClass() != obj.getClass())
 			return false;
 		Teams other = (Teams) obj;
-		return Objects.equals(teamData, other.teamData);
+		return Objects.equals(teamdata, other.teamdata);
 	}
 
 	@Override
 	public String toString() {
-		return "Teams [teamData=" + teamData + "]";
+		return "Teams [teamData=" + teamdata + "]";
 	}
 	
 

@@ -1,14 +1,12 @@
 package com.arenal.telegrambot.application.telegramBot;
 
-import org.telegram.telegrambots.meta.TelegramBotsApi;
-
 import com.arenal.telegrambot.BootcampArenalBot;
+import com.arenal.telegrambot.application.telegramBot.exceptions.FileNotModifiedException;
 
 public interface TelegramBotService {
-
-	public String digest(String jsonFile);
-	public BootcampArenalBot createAndInitializeBot();
-	public String digestLocal(String jsonFile);
 	void forwardChangesToTelegram(String message, BootcampArenalBot bot);
+	public String getJsonFile(String githubEvent) throws FileNotModifiedException;
+	public String getMessage(String jsonFile) throws FileNotModifiedException;
+
 
 }

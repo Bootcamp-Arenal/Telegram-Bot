@@ -8,15 +8,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
 
 import com.arenal.telegrambot.BootcampArenalBot;
 import com.arenal.telegrambot.application.telegramBot.TelegramBotService;
+import com.arenal.telegrambot.application.telegramBot.exceptions.FileNotModifiedException;
+import com.arenal.telegrambot.logger.ColorLogger;
 
 @RestController
 @RequestMapping(path = "/payload")
 public class TelegramBotController {
-
+	private ColorLogger logger = new ColorLogger();
+	
 	@Inject
 	private BootcampArenalBot bot;
 
@@ -29,15 +31,18 @@ public class TelegramBotController {
 
 	@PostMapping
 	public void forwardChangesToTelegram(@RequestBody String jsonFile) {
-		String message = telegramBotService.digest(jsonFile);
-		telegramBotService.forwardChangesToTelegram(message, bot);
-		System.out.println(message);
+		try {
+			String message = telegramBotService.getMessage(jsonFile);
+			telegramBotService.forwardChangesToTelegram(message, bot);
+		} catch (FileNotModifiedException e) {
+			logger.info(e.getMessage());
+		}
+
 	}
 
 	@GetMapping
 	public String testMapping() {
-		bot = telegramBotService.createAndInitializeBot();
-		return "Bot Initialized";
+		return "API Test";
 	}
 
 }

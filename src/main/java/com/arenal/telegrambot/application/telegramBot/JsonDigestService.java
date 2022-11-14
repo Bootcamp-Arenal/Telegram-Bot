@@ -7,15 +7,13 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.arenal.telegrambot.application.telegramBot.exceptions.FileNotModifiedException;
-import com.arenal.telegrambot.model.Activity;
+import com.arenal.telegrambot.logger.ColorLogger;
 import com.arenal.telegrambot.model.Team;
 import com.arenal.telegrambot.model.Teams;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,25 +23,34 @@ import com.google.gson.JsonParser;
 
 @Service
 public class JsonDigestService {
-	
-	public Teams digestLocal(String jsonFile) throws FileNotModifiedException {
+	private ColorLogger logger = new ColorLogger();
+
+	public Teams digestJsonFile(String jsonFile) throws FileNotModifiedException {
 		List<Team> winningTeams = new ArrayList<>();
 		ObjectMapper mapper = new ObjectMapper();
 		Teams teamData = new Teams();
 		try {
 			teamData = mapper.readValue(jsonFile, Teams.class);
+			if (teamData.toList().size() >= 1) {
+				int maxTeamScore = teamData.toList().stream().mapToInt(Team::getTotalScore).max().getAsInt();
 
-			int maxTeamScore = maxTeamsScore(teamData);
-			Map<Team, Integer> teamDataMap = initializeTeamDataMap(teamData);
-			winningTeams = getWinningTeams(teamDataMap, maxTeamScore);
+				winningTeams = teamData.toList().stream()
+						.filter(team -> team.getTotalScore() == maxTeamScore)
+						.collect(Collectors.toList());
+				teamData.setTeamdata(winningTeams);
+				
+				logger.info("Winning teams: " + winningTeams);
+			} else {
+				logger.warn("No winning teams found");
+			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Error reading Json file");
 		}
-		return new Teams(winningTeams);
+
+		return teamData;
 	}
 
-	public Teams digest(String githubEvent) throws FileNotModifiedException {
-		List<Team> winningTeams = new ArrayList<>();
+	public String getJsonFileFromGithub(String githubEvent) throws FileNotModifiedException {
 		String jsonFile = "";
 
 		JsonObject root = JsonParser.parseString(githubEvent).getAsJsonObject();
@@ -51,34 +58,17 @@ public class JsonDigestService {
 		JsonArray modified = headCommit.get("modified").getAsJsonArray();
 
 		if (!modified.toString().contains("src/data/teamdata.json")) {
-			throw new FileNotModifiedException("Ha habido un push que no ha modificado el archivo de los datos");
+			throw new FileNotModifiedException("teamdata.json file was not modified");
 		}
-
-		ObjectMapper mapper = new ObjectMapper();
-
 		jsonFile = readFile();
 
-		Teams teamData = new Teams();
-		try {
-			teamData = mapper.readValue(jsonFile, Teams.class);
-
-			int maxTeamScore = maxTeamsScore(teamData);
-			Map<Team, Integer> teamDataMap = initializeTeamDataMap(teamData);
-			winningTeams = getWinningTeams(teamDataMap, maxTeamScore);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return new Teams(winningTeams);
+		return jsonFile;
 	}
 
 	public int maxTeamsScore(Teams teamData) {
 		int maxTeamScore = 0;
 		for (Team team : teamData.toList()) {
-			int teamScore = 0;
-			List<Activity> actividades = team.getActividades();
-			for (Activity actividad : actividades) {
-				teamScore += actividad.getPuntos();
-			}
+			int teamScore = team.getTotalScore();
 			if (teamScore >= maxTeamScore) {
 				maxTeamScore = teamScore;
 			}
@@ -109,6 +99,7 @@ public class JsonDigestService {
 				file += line + "\n";
 			}
 		} catch (IOException e) {
+			logger.error("Error reading Json file");
 			e.printStackTrace();
 		} finally {
 			try {
@@ -122,32 +113,11 @@ public class JsonDigestService {
 					br.close();
 				}
 			} catch (IOException e) {
+				logger.warn("Error closing streams");
 				e.printStackTrace();
 			}
 		}
-
+		logger.info("Json file successfully read");
 		return file;
-
-	}
-
-	private Map<Team, Integer> initializeTeamDataMap(Teams teamData) {
-
-		Map<Team, Integer> teamDataMap = new HashMap<>();
-
-		for (Team team : teamData.toList()) {
-			int teamScore = 0;
-			List<Activity> actividades = team.getActividades();
-			for (Activity actividad : actividades) {
-				teamScore += actividad.getPuntos();
-			}
-			teamDataMap.put(team, teamScore);
-		}
-		return teamDataMap;
-	}
-
-	private List<Team> getWinningTeams(Map<Team, Integer> teamDataMap, int maxTeamScore) {
-
-		return teamDataMap.keySet().stream().filter(elem -> teamDataMap.get(elem).compareTo(maxTeamScore) == 0)
-				.collect(Collectors.toList());
 	}
 }

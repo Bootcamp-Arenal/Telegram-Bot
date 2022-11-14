@@ -46,6 +46,14 @@ public class Team {
 		this.actividades = actividades;
 	}
 
+	public Integer getTotalScore () {
+		Integer score = 0;
+		for (Activity activity : actividades) {
+			score += activity.getPuntos();
+		}
+		return score;
+	}
+
 
 	@Override
 	public int hashCode() {
