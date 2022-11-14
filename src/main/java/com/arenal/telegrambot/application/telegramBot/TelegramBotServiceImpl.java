@@ -28,7 +28,7 @@ public class TelegramBotServiceImpl implements TelegramBotService {
 
 	@Override
 	public BootcampArenalBot createAndInitializeBot() {
-		BootcampArenalBot bot = new BootcampArenalBot();
+		BootcampArenalBot bot = new BootcampArenalBot(null);
 		System.out.println("Hola, he sido inicializado!!!!");
 		TelegramBotsApi botsApi = null;
 

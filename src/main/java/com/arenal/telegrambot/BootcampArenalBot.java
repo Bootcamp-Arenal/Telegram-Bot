@@ -3,6 +3,9 @@ package com.arenal.telegrambot;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -10,11 +13,13 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 @Component
+@PropertySource("classpath:application.properties")
 // @ConfigurationProperties(prefix = "telegram-bot")
 public class BootcampArenalBot extends TelegramLongPollingBot {
 
 	private String username;
 	private String token;
+	@Value("${bot.token}") String token_prop;
 	private List<String> chatIds;
 
 	@Override
@@ -60,10 +65,11 @@ public class BootcampArenalBot extends TelegramLongPollingBot {
 		this.chatIds = chatIds;
 	}
 
-    public BootcampArenalBot() {
+	@Autowired
+    public BootcampArenalBot(@Value("${bot.token}") String token_prop) {
         super();
         this.username = "bootcamp_arenal_bot";
-        this.token = "5732632626:AAGbGOF26WCUxdidgNrixs5iGIiVFoQw_gE";
+        this.token = token_prop;
         this.chatIds = new ArrayList<String>();
     }
     
