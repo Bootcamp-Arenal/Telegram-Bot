@@ -1,5 +1,6 @@
 package com.arenal.telegrambot;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -21,12 +22,14 @@ public class BootcampArenalBot extends TelegramLongPollingBot {
 //        if (!update.hasMessage() || !update.getMessage().hasText()) {
 //            return;
 //        }
-
-		System.out.println("He recibido una actualización");
 		SendMessage sendMessage = new SendMessage();
 		if (update.getMessage().getText().equals("/start")) {
 			String chatId = update.getMessage().getChatId().toString();
-			System.out.println(chatId);
+            System.out.println("??????????????????");
+            this.chatIds.add(chatId);
+            System.out.println("!!!!!!!!!!!!!!!!!");
+
+			System.out.println(chatIds);
 			sendMessage.setText("Hello, " + update.getMessage().getFrom().getFirstName() + "!");	
 			sendMessage.setChatId(chatId);
 			try {
@@ -40,21 +43,29 @@ public class BootcampArenalBot extends TelegramLongPollingBot {
 
 	@Override
 	public String getBotToken() {
-		return "5732632626:AAGbGOF26WCUxdidgNrixs5iGIiVFoQw_gE";
+		return this.token;
 	}
 
 	@Override
 	public String getBotUsername() {
-		return "bootcamp_arenal_bot";
+		return this.username;
 	}
 
 	public List<String> getChatIds() {
-		return chatIds;
+		return this.chatIds;
 	}
 
 	public void setChatIds(List<String> chatIds) {
 		this.chatIds = chatIds;
 	}
+
+    public BootcampArenalBot() {
+        super();
+        this.username = "bootcamp_arenal_bot";
+        this.token = "5732632626:AAGbGOF26WCUxdidgNrixs5iGIiVFoQw_gE";
+        this.chatIds = new ArrayList<String>();
+    }
+    
 
 	
 //	public void BootcampArenalBot() {

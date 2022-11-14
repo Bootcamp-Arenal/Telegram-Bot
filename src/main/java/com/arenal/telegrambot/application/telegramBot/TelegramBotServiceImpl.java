@@ -43,16 +43,16 @@ public class TelegramBotServiceImpl implements TelegramBotService {
 
 	@Override
 	public void forwardChangesToTelegram(String message, BootcampArenalBot bot) {
-		SendMessage sendMessage = new SendMessage();
-		sendMessage.setText(message);
-		sendMessage.setChatId("28866629");
-		try {
-            bot.execute(sendMessage);
-            System.out.println("Mensaje mandado satisfactoriamente");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-		
+		for(String chatId : bot.getChatIds()) {
+			SendMessage sendMessage = new SendMessage();
+			sendMessage.setChatId(chatId);
+			sendMessage.setText(message);
+			try {
+				bot.execute(sendMessage);
+			} catch (TelegramApiException e) {
+				e.printStackTrace();
+			}
+		}		
 	}
 
 	@Override
