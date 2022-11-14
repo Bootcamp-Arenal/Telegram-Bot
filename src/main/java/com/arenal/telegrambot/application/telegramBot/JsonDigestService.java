@@ -49,9 +49,14 @@ public class JsonDigestService {
 		JsonObject root = JsonParser.parseString(githubEvent).getAsJsonObject();
 		JsonObject headCommit = root.get("head_commit").getAsJsonObject();
 		JsonArray modified = headCommit.get("modified").getAsJsonArray();
+		String ref = root.get("ref").toString();
 
 		if (!modified.toString().contains("src/data/teamdata.json")) {
 			throw new FileNotModifiedException("Ha habido un push que no ha modificado el archivo de los datos");
+		}
+
+		if(!ref.equals("refs/heads/main")){
+			throw new FileNotModifiedException("Ha habido un push que no ha sido en la rama main");
 		}
 
 		ObjectMapper mapper = new ObjectMapper();
