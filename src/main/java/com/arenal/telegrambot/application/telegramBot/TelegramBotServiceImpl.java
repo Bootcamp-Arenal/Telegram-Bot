@@ -1,5 +1,6 @@
 package com.arenal.telegrambot.application.telegramBot;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,13 @@ public class TelegramBotServiceImpl implements TelegramBotService {
 
 	@Override
 	public BootcampArenalBot createAndInitializeBot() {
-		BootcampArenalBot bot = new BootcampArenalBot();
+
+		BootcampArenalBot bot = null;
+		try {
+			bot = new BootcampArenalBot();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 		System.out.println("Hola, he sido inicializado!!!!");
 		TelegramBotsApi botsApi = null;
 

@@ -4,6 +4,8 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 
 import com.arenal.telegrambot.BootcampArenalBot;
 
+import java.io.IOException;
+
 public interface TelegramBotService {
 
 	public String digest(String jsonFile);
