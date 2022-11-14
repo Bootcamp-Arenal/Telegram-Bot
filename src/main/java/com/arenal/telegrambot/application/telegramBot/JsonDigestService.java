@@ -50,13 +50,13 @@ public class JsonDigestService {
 		JsonObject headCommit = root.get("head_commit").getAsJsonObject();
 		JsonArray modified = headCommit.get("modified").getAsJsonArray();
 		String ref = root.get("ref").toString();
+		
+		if(!ref.contains("refs/heads/main")){
+			throw new FileNotModifiedException("Ha habido un push que no ha sido en la rama main");
+		}
 
 		if (!modified.toString().contains("src/data/teamdata.json")) {
 			throw new FileNotModifiedException("Ha habido un push que no ha modificado el archivo de los datos");
-		}
-
-		if(!ref.equals("refs/heads/main")){
-			throw new FileNotModifiedException("Ha habido un push que no ha sido en la rama main");
 		}
 
 		ObjectMapper mapper = new ObjectMapper();
@@ -100,7 +100,7 @@ public class JsonDigestService {
 		try {
 
 			url = new URL(
-					"https://raw.githubusercontent.com/Bootcamp-Arenal/Scoring-App/develop/src/data/teamdata.json");
+					"https://raw.githubusercontent.com/Bootcamp-Arenal/Scoring-App/main/src/data/teamdata.json");
 			URLConnection uc = url.openConnection();
 			uc.setUseCaches(false);
 
