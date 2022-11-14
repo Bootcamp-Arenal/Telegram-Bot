@@ -63,7 +63,7 @@ public class BootcampArenalBot extends TelegramLongPollingBot {
     public BootcampArenalBot() {
         super();
         this.username = "arenal_score_bot";
-        this.token = "5673639984:AAWMukhCFyazL48Wiqve";
+        this.token = "5673639984:AAWMukhCFyazL48Wiqve8eNSzL0sFk2yXk";
         this.chatIds = new ArrayList<String>();
     }
     
