@@ -1,8 +1,14 @@
 package com.arenal.telegrambot;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.arenal.telegrambot.model.Chat;
+import com.arenal.telegrambot.model.Chats;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -15,26 +21,30 @@ public class BootcampArenalBot extends TelegramLongPollingBot {
     private String token;
     private List<String> chatIds;
 
+    ObjectMapper mapper = new ObjectMapper();
+
     @Override
     public void onUpdateReceived(Update update) {
-        if (!update.hasMessage() || !update.getMessage().hasText() || !update.getMessage().getText().equals("/start")) {
-            return;
-        }
-
         SendMessage sendMessage = new SendMessage();
-        String chatId = update.getMessage().getChatId().toString();
+        if (update.getMessage().getText().equals("/start")) {
+            String chatId = update.getMessage().getChatId().toString();
 
-        if (this.chatIds.contains(chatId)) {
-            sendMessage.setText("Ya estás suscrito a los cambios");
-        } else {
-            this.chatIds.add(chatId);
-            sendMessage.setText("Te has suscrito a los cambios");
-        }
-        sendMessage.setChatId(chatId);
-        try {
-            execute(sendMessage);
-        } catch (Exception e) {
-            e.printStackTrace();
+            if (this.chatIds.contains(chatId)) {
+                sendMessage.setText("Ya estás suscrito a los cambios");
+            } else {
+                try {
+                    writeChatId(chatId);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                sendMessage.setText("Te has suscrito a los cambios");
+            }
+            sendMessage.setChatId(chatId);
+            try {
+                execute(sendMessage);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
     }
@@ -49,18 +59,45 @@ public class BootcampArenalBot extends TelegramLongPollingBot {
         return this.username;
     }
 
-    public List<String> getChatIds() {
-        return this.chatIds;
-    }
-
     public void setChatIds(List<String> chatIds) {
         this.chatIds = chatIds;
     }
 
-    public BootcampArenalBot() {
+    public BootcampArenalBot() throws IOException {
         super();
-        this.username = "arenalJorgeBot";
-        this.token = "5788244126:AAF6q63DGbclHm_Z42UOWj79J9_2_nb4tIQ";
-        this.chatIds = new ArrayList<String>();
+        this.username = "bootcamp_arenal_bot";
+        this.token = "5732632626:AAGbGOF26WCUxdidgNrixs5iGIiVFoQw_gE";
+        this.chatIds = this.readChatIds();
+    }
+
+    public List<String> readChatIds() throws IOException {
+
+        FileInputStream fileInputStream = new FileInputStream("src/main/resources/ChatIdList.json");
+        String jsonData = IOUtils.toString(fileInputStream, "UTF-8");
+        Chats chats = mapper.readValue(jsonData, Chats.class);
+        List<String> ids = new ArrayList<>();
+        for(Chat chat : chats.getChats()){
+            ids.add(chat.getId());
+        }
+        fileInputStream.close();
+        return ids;
+    }
+
+    public void writeChatId(String chatId) throws IOException {
+        chatIds.add(chatId);
+        List<Chat> newChats = new ArrayList<>();
+        Chats chats = new Chats();
+        for(String id: chatIds){
+            Chat chatToAdd = new Chat(id);
+            newChats.add(chatToAdd);
+        }
+        chats.setChats(newChats);
+        FileWriter myWriter = new FileWriter("src/main/resources/ChatIdList.json");
+        myWriter.write(new Gson().toJson(chats));
+        myWriter.close();
+    }
+
+    public List<String> getChatIds() {
+        return this.chatIds;
     }
 }

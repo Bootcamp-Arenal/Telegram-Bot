@@ -24,7 +24,7 @@ public class TelegramBotServiceImpl implements TelegramBotService {
 		super();
 		this.jsonDigest = jsonDigest;
 	}
-
+	
 	@Override
 	public void forwardChangesToTelegram(String message, BootcampArenalBot bot) {
 		if (bot.getChatIds().size() < 1) {
