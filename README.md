@@ -1,3 +1,6 @@
+Diagrama de actividad:
+https://miro.com/app/board/uXjVPEctiBs=/
+
 // 1. Leer de la rama main
 		// 2. Leer los modificados
 		// 3. Si en los modificados está el archivo teamdata.js
