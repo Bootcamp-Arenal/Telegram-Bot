@@ -25,12 +25,13 @@ public class BootcampArenalBot extends TelegramLongPollingBot {
 		SendMessage sendMessage = new SendMessage();
 		if (update.getMessage().getText().equals("/start")) {
 			String chatId = update.getMessage().getChatId().toString();
-            System.out.println("??????????????????");
-            this.chatIds.add(chatId);
-            System.out.println("!!!!!!!!!!!!!!!!!");
 
-			System.out.println(chatIds);
-			sendMessage.setText("Hello, " + update.getMessage().getFrom().getFirstName() + "!");	
+            if(this.chatIds.contains(chatId)) {
+                sendMessage.setText("Ya estás suscrito a los cambios");
+            } else {
+                this.chatIds.add(chatId);
+                sendMessage.setText("Te has suscrito a los cambios");
+            }	
 			sendMessage.setChatId(chatId);
 			try {
 				execute(sendMessage);
