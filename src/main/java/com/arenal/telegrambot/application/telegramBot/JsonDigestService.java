@@ -7,9 +7,12 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -89,6 +92,56 @@ public class JsonDigestService {
 			}
 		}
 		return maxTeamScore;
+	}
+
+	public String updateScoreboard(){
+
+		String jsonFile = "";
+		ObjectMapper mapper = new ObjectMapper();
+		Map<Team, Integer> teamDataMap = new HashMap<>();
+
+		jsonFile = readFile();
+		
+		Teams teamData = new Teams();
+		try {
+			teamData = mapper.readValue(jsonFile, Teams.class);
+			teamDataMap = initializeTeamDataMap(teamData);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		//Sort map by value
+		LinkedHashMap<Team, Integer> sortedMap = new LinkedHashMap<>();
+		ArrayList<Integer> valueList = new ArrayList<>();
+
+		for (Map.Entry<Team, Integer> entry : teamDataMap.entrySet()) {
+            valueList.add(entry.getValue());
+        }
+        Collections.sort(valueList, Collections.reverseOrder()); 
+
+		for (int num : valueList) {
+            for (Entry<Team, Integer> entry : teamDataMap.entrySet()) {
+                if (entry.getValue().equals(num)) {
+                    sortedMap.put(entry.getKey(), num);
+                }
+            }
+        }
+
+		int position = 0;
+		String scoreboard = "";
+
+		for (Map.Entry<Team, Integer> team : sortedMap.entrySet()) {
+			scoreboard += ++position + "º - " + team.getKey().getName() + " : " + team.getValue() + " puntos\n";
+		}
+		
+		
+		// String scoreboard = teamDataMap.entrySet().stream()
+		// 		.sorted(Map.Entry.<Team, Integer>comparingByValue().reversed())
+		// 		.map(entry -> entry.getKey().getName() + ": " + entry.getValue())
+		// 		.collect(Collectors.joining("\n"));
+
+		return "Clasificacion actual: \n\n" + scoreboard;
+		
 	}
 
 	private String readFile() {

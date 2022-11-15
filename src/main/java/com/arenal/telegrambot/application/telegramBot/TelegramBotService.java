@@ -1,7 +1,5 @@
 package com.arenal.telegrambot.application.telegramBot;
 
-import org.telegram.telegrambots.meta.TelegramBotsApi;
-
 import com.arenal.telegrambot.BootcampArenalBot;
 
 public interface TelegramBotService {
