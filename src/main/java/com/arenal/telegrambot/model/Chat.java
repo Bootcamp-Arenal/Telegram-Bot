@@ -2,7 +2,20 @@ package com.arenal.telegrambot.model;
 
 import java.util.Objects;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Table;
+
+import org.springframework.data.annotation.Id;
+
+@Table(name = "chat")
+@Entity
 public class Chat {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long idDb;
+    
     private String id;
 
     public Chat(String id) {

@@ -2,6 +2,8 @@ package com.arenal.telegrambot.application.telegramBot;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -10,8 +12,10 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import com.arenal.telegrambot.BootcampArenalBot;
 import com.arenal.telegrambot.application.telegramBot.exceptions.FileNotModifiedException;
 import com.arenal.telegrambot.logger.ColorLogger;
+import com.arenal.telegrambot.model.Chat;
 import com.arenal.telegrambot.model.Team;
 import com.arenal.telegrambot.model.Teams;
+import com.arenal.telegrambot.repository.ChatRepository;
 
 @Service
 public class TelegramBotServiceImpl implements TelegramBotService {
@@ -19,10 +23,13 @@ public class TelegramBotServiceImpl implements TelegramBotService {
 
 	private JsonDigestService jsonDigest;
 
+	private ChatRepository chatRepository;
+
 	@Autowired
-	public TelegramBotServiceImpl(JsonDigestService jsonDigest) {
+	public TelegramBotServiceImpl(JsonDigestService jsonDigest, ChatRepository chatRepository) {
 		super();
 		this.jsonDigest = jsonDigest;
+		this.chatRepository = chatRepository;
 	}
 	
 	@Override
@@ -77,5 +84,15 @@ public class TelegramBotServiceImpl implements TelegramBotService {
 		}
 		message += String.format(" con %d puntos", jsonDigest.maxTeamsScore(teamsData));
 		return message;
+	}
+
+
+	@Override
+	public void save(@Valid String chatId) {
+		chatRepository.save(new Chat(chatId));
+	}
+	@Override
+	public List<Chat> findAll() {
+		return chatRepository.findAll();
 	}
 }

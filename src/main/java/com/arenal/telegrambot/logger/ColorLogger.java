@@ -35,16 +35,4 @@ public class ColorLogger {
     public void error(String message) {
         LOGGER.error(red + message + reset);
     }
-
-
-    // public void logDebug(String logging) {
-    //     LOGGER.debug("\u001B[34m" + logging + "\u001B[0m");
-    // }
-    // public void logInfo(String logging) {
-    //     LOGGER.info("\u001B[32m" + logging + "\u001B[0m");
-    // }
-    
-    // public void logError(String logging) {
-    //     LOGGER.error("\u001B[31m" + logging + "\u001B[0m");
-    // }
 }
