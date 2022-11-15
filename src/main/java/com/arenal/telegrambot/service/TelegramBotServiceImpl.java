@@ -1,4 +1,4 @@
-package com.arenal.telegrambot.application.telegramBot;
+package com.arenal.telegrambot.service;
 
 import java.util.List;
 
@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import com.arenal.telegrambot.BootcampArenalBot;
-import com.arenal.telegrambot.application.telegramBot.exceptions.FileNotModifiedException;
+import com.arenal.telegrambot.service.exceptions.FileNotModifiedException;
+import com.arenal.telegrambot.component.Bot;
 import com.arenal.telegrambot.logger.ColorLogger;
 import com.arenal.telegrambot.model.Chat;
 import com.arenal.telegrambot.model.Team;
@@ -33,13 +33,13 @@ public class TelegramBotServiceImpl implements TelegramBotService {
 	}
 	
 	@Override
-	public void forwardChangesToTelegram(String message, BootcampArenalBot bot) {
+	public void forwardChangesToTelegram(String message, Bot bot) {
 		if (bot.getChatIds().size() < 1) {
 			logger.warn("No chat ids found");
 		} else {
-			for (String chatId : bot.getChatIds()) {
+			for (Long chatId : bot.getChatIds()) {
 				SendMessage sendMessage = new SendMessage();
-				sendMessage.setChatId(chatId);
+				sendMessage.setChatId(String.valueOf(chatId));
 				sendMessage.setText(message);
 				try {
 					bot.execute(sendMessage);
@@ -88,7 +88,7 @@ public class TelegramBotServiceImpl implements TelegramBotService {
 
 
 	@Override
-	public void save(@Valid String chatId) {
+	public void save(@Valid Long chatId) {
 		chatRepository.save(new Chat(chatId));
 	}
 	@Override

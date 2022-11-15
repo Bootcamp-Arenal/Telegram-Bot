@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.arenal.telegrambot.BootcampArenalBot;
-import com.arenal.telegrambot.application.telegramBot.TelegramBotService;
-import com.arenal.telegrambot.application.telegramBot.exceptions.FileNotModifiedException;
+import com.arenal.telegrambot.service.exceptions.FileNotModifiedException;
+import com.arenal.telegrambot.component.Bot;
 import com.arenal.telegrambot.logger.ColorLogger;
+import com.arenal.telegrambot.service.TelegramBotService;
 
 @RestController
 @RequestMapping(path = "/payload")
@@ -20,7 +20,7 @@ public class TelegramBotController {
 	private ColorLogger logger = new ColorLogger();
 	
 	@Inject
-	private BootcampArenalBot bot;
+	private Bot bot;
 
 	private TelegramBotService telegramBotService;
 

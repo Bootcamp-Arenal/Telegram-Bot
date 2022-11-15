@@ -1,4 +1,4 @@
-package com.arenal.telegrambot.application.telegramBot;
+package com.arenal.telegrambot.service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.arenal.telegrambot.application.telegramBot.exceptions.FileNotModifiedException;
+import com.arenal.telegrambot.service.exceptions.FileNotModifiedException;
 import com.arenal.telegrambot.logger.ColorLogger;
 import com.arenal.telegrambot.model.Team;
 import com.arenal.telegrambot.model.Teams;

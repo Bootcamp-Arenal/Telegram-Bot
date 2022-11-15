@@ -1,4 +1,4 @@
-package com.arenal.telegrambot.application.telegramBot.exceptions;
+package com.arenal.telegrambot.service.exceptions;
 
 public class FileNotModifiedException extends Exception{
     /**

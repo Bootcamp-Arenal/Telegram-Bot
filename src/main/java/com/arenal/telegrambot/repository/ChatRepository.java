@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.arenal.telegrambot.model.Chat;
 
 @Repository
-public interface ChatRepository extends JpaRepository<Chat, String>{
+public interface ChatRepository extends JpaRepository<Chat, Long>{
     List<Chat> findAll();
     
     public long count();

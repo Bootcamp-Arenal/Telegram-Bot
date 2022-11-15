@@ -5,30 +5,30 @@ import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.springframework.data.annotation.Id;
 
 @Table(name = "chat")
 @Entity
 public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long idDb;
-    
-    private String id;
+    private Long id;
 
-    public Chat(String id) {
+    
+
+    public Chat(Long id) {
         this.id = id;
     }
 
     public Chat(){}
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
