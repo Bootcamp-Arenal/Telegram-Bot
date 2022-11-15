@@ -48,7 +48,7 @@ public class BootcampArenalBot extends TelegramLongPollingBot {
 
 		}
 
-		if (update.getMessage().getText().equals("/start")) {
+		if (update.getMessage().getText().equals("/suscribe")) {
 
 			String chatId = update.getMessage().getChatId().toString();
 
@@ -64,6 +64,39 @@ public class BootcampArenalBot extends TelegramLongPollingBot {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+
+		if (update.getMessage().getText().equals("/web")) {
+
+			String chatId = update.getMessage().getChatId().toString();
+			sendMessage.setChatId(chatId);
+
+			String webLink = "El enlace es: https://scoring-app-nine.vercel.app/";
+			sendMessage.setText(webLink);
+
+			try {
+				execute(sendMessage);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		if (update.getMessage().getText().equals("/help")) {
+
+			String chatId = update.getMessage().getChatId().toString();
+			sendMessage.setChatId(chatId);
+
+			String helpMessage = "/scoreboard Muestra la clasificación global"
+					+ "\n/web -> Muestra el enlace de la web";
+			sendMessage.setText(helpMessage);
+
+			try {
+				execute(sendMessage);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 		}
 
 	}
