@@ -21,19 +21,22 @@ public class Bot extends TelegramLongPollingBot {
 
     private String username;
     private String token;
-    private List<Long> chatIds;
+    private List<String> chatIds;
+
+    // @Autowired
+    // public Bot() {
+    //     this.telegramBotService = telegramBotService;
+    // }
 
     @Autowired
     public Bot(TelegramBotService telegramBotService) {
-        this.telegramBotService = telegramBotService;
-    }
-
-    
-    public Bot() throws IOException {
         super();
-        this.username = "bootcamp_arenal_bot";
-        this.token = "5732632626:AAGbGOF26WCUxdidgNrixs5iGIiVFoQw_gE";
-        this.chatIds = telegramBotService.findAll().stream().map(Chat::getId).collect(Collectors.toList());
+        this.username = "arenalJorgeBot";
+        this.token = "5788244126:AAF6q63DGbclHm_Z42UOWj79J9_2_nb4tIQ";
+        // this.username = "bootcamp_arenal_bot";
+        // this.token = "5732632626:AAGbGOF26WCUxdidgNrixs5iGIiVFoQw_gE";
+        this.telegramBotService = telegramBotService;
+        this.chatIds = telegramBotService.findAll().stream().map(Chat::getChatId).collect(Collectors.toList());
     }
 
     ObjectMapper mapper = new ObjectMapper();
@@ -44,10 +47,10 @@ public class Bot extends TelegramLongPollingBot {
         if (update.getMessage().getText().equals("/start")) {
             String chatId = update.getMessage().getChatId().toString();
 
-            if (this.chatIds.contains(Long.parseLong(chatId))) {
+            if (this.chatIds.contains(chatId)) {
                 sendMessage.setText("Ya estás suscrito a los cambios");
             } else {
-                telegramBotService.save(Long.parseLong(chatId));
+                telegramBotService.save(chatId);
                 sendMessage.setText("Te has suscrito a los cambios");
             }
             sendMessage.setChatId(chatId);
@@ -70,11 +73,11 @@ public class Bot extends TelegramLongPollingBot {
         return this.username;
     }
 
-    public void setChatIds(List<Long> chatIds) {
+    public void setChatIds(List<String> chatIds) {
         this.chatIds = chatIds;
     }
 
-    public List<Long> getChatIds() {
+    public List<String> getChatIds() {
         return this.chatIds;
     }
 }

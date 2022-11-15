@@ -12,7 +12,7 @@ public interface TelegramBotService {
 	void forwardChangesToTelegram(String message, Bot bot);
 	public String getJsonFile(String githubEvent) throws FileNotModifiedException;
 	public String getMessage(String jsonFile) throws FileNotModifiedException;
-	public void save(@Valid Long chatId);
+	public void save(@Valid String chatId);
 	public List<Chat> findAll();
 
 

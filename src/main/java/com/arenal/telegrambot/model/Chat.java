@@ -16,10 +16,12 @@ public class Chat {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    private String chatId;
+
     
 
-    public Chat(Long id) {
-        this.id = id;
+    public Chat(String chatId) {
+        this.chatId = chatId;
     }
 
     public Chat(){}
@@ -28,8 +30,13 @@ public class Chat {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    
+    public String getChatId() {
+        return chatId;
+    }
+
+    public void setChatId(String chatId) {
+        this.chatId = chatId;
     }
 
     @Override

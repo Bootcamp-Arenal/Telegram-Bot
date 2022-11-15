@@ -37,9 +37,9 @@ public class TelegramBotServiceImpl implements TelegramBotService {
 		if (bot.getChatIds().size() < 1) {
 			logger.warn("No chat ids found");
 		} else {
-			for (Long chatId : bot.getChatIds()) {
+			for (String chatId : bot.getChatIds()) {
 				SendMessage sendMessage = new SendMessage();
-				sendMessage.setChatId(String.valueOf(chatId));
+				sendMessage.setChatId(chatId);
 				sendMessage.setText(message);
 				try {
 					bot.execute(sendMessage);
@@ -88,7 +88,7 @@ public class TelegramBotServiceImpl implements TelegramBotService {
 
 
 	@Override
-	public void save(@Valid Long chatId) {
+	public void save(@Valid String chatId) {
 		chatRepository.save(new Chat(chatId));
 	}
 	@Override
