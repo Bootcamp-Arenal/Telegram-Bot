@@ -91,6 +91,31 @@ public class JsonDigestService {
 		return maxTeamScore;
 	}
 
+	public String updateScoreboard(){
+
+		String jsonFile = "";
+		ObjectMapper mapper = new ObjectMapper();
+		Map<Team, Integer> teamDataMap = new HashMap<>();
+
+		jsonFile = readFile();
+		
+		Teams teamData = new Teams();
+		try {
+			teamData = mapper.readValue(jsonFile, Teams.class);
+			teamDataMap = initializeTeamDataMap(teamData);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		String scoreboard = teamDataMap.entrySet().stream()
+				.sorted(Map.Entry.<Team, Integer>comparingByValue().reversed())
+				.map(entry -> entry.getKey().getName() + ": " + entry.getValue())
+				.collect(Collectors.joining("\n"));
+
+		return "Clasificacion actual: \n\n" + scoreboard;
+		
+	}
+
 	private String readFile() {
 		String file = "";
 		URL url;

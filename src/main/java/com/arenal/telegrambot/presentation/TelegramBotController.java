@@ -29,7 +29,6 @@ public class TelegramBotController {
 	public void forwardChangesToTelegram(@RequestBody String jsonFile) {
 		String message = telegramBotService.digest(jsonFile);
 		telegramBotService.forwardChangesToTelegram(message, bot);
-		System.out.println(message);
 	}
 
 	@GetMapping
