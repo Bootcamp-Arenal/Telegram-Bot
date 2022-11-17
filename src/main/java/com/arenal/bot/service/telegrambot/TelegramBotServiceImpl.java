@@ -76,7 +76,7 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
         } else {
             try {
                 String teamDataJson = jsonDigestService.getJsonTeamdata(githubJsonFile);
-
+                logger.debug("TeamDataJson: \n" + teamDataJson);
                 Teams teams = jsonDigestService.getTeams(teamDataJson);
                 Teams winnerTeams = getWinnerTeams(teams);
                 String winnerTeamsMessage = getWinnerTeamsMessage(winnerTeams);
@@ -90,10 +90,15 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
 
     private void sendWinnerTeamsMessage(List<Chat> telegramChats, String winnerTeamsMessage) {
         SendMessage messageToBeSent = new SendMessage();
+        SendMessage changeMessage = new SendMessage();
+        changeMessage.setText("🆕 There has been an update!");
         for (Chat telegramChat : telegramChats) {
+            changeMessage.setChatId(telegramChat.getChatId());
+
             messageToBeSent.setChatId(telegramChat.getChatId());
             messageToBeSent.setText(winnerTeamsMessage);
             try {
+                execute(changeMessage);
                 execute(messageToBeSent);
                 logger.info("Message sent to chatId: " + telegramChat.getChatId());
             } catch (TelegramApiException e) {
@@ -133,7 +138,6 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
         SendMessage messageToBeSent = new SendMessage();
         String chatId = update.getMessage().getChatId().toString();
         messageToBeSent.setChatId(chatId);
-        ;
         String aux = update.getMessage().getText().toString();
         logger.debug("message sent = " + aux);
         String[] updateReceived = aux.split(" ");
@@ -150,7 +154,7 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
                 break;
             case "/team":
                 if (updateReceived.length < 2) {
-                    messageToBeSent.setText("\uD83D\uDE00Incorrect format. Please use \"/team teamName\" ");
+                    messageToBeSent.setText("😵 Incorrect format. Please use /team example team");
                 } else {
                     String teamName = "";
                     for (String elem : updateReceived) {
@@ -162,10 +166,10 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
                 }
                 break;
             case "/web":
-                messageToBeSent.setText("El enlace es: https://scoring-app-nine.vercel.app/");
+                messageToBeSent.setText("Web link: https://scoring-app-nine.vercel.app/");
                 break;
             default:
-                messageToBeSent.setText("Select a valid command. Type /help to know what they are");
+                messageToBeSent.setText("Select a valid command. Use /help to get all available commands ");
                 break;
         }
 
@@ -193,18 +197,19 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
         boolean isMultipleWinners = winners.size() > 1;
         if (isMultipleWinners) {
 
-            message.append("Los equipos que van ganando son ");
+            message.append("The teams taking the lead are ");
 
             int winnersCount = winners.size();
 
             for (int i = 0; i < winnersCount - 1; i++) {
+                logger.debug(winners.get(i).getName().toString());
                 message.append(winners.get(i).getName());
-                message.append(", ");
+                if (i != winnersCount-2) {
+                    message.append(", ");
+                }
             }
-            message.append(" y ");
+            message.append(" and ");
             message.append(winners.get(winnersCount - 1).getName());
-            message.append(", ");
-
 
             /*for (Team team : winners) {
                 message.append(team.getName());
@@ -245,11 +250,11 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
             }*/
         } else {
             Team team = winners.get(0);
-            message.append("El equipo que va ganando es " + team.getName());
+            message.append("The team taking the lead is " + team.getName());
         }
 
         int highestScore = winners.get(0).getTotalScore();
-        message.append(" con " + highestScore + " puntos");
+        message.append(" with " + highestScore + " points");
 
         return message.toString();
     }

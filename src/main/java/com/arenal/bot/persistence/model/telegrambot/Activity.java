@@ -55,7 +55,7 @@ public class Activity {
 
     @Override
     public String toString() {
-        return "Activity: " + name + ", points=" + puntos;
+        return "Activity - " + name.trim() + " | Score: " + puntos;
     }
 
 
