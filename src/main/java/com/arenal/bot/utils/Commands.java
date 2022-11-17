@@ -12,6 +12,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -19,6 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Commands {
+    private ColorLogger logger;
 
     private JsonDigestService jsonDigestService;
     private ChatRepository chatRepository;
@@ -27,15 +30,17 @@ public class Commands {
     public Commands(ChatRepository chatRepository, JsonDigestService jsonDigestService) {
         this.chatRepository = chatRepository;
         this.jsonDigestService = jsonDigestService;
+        this.logger = new ColorLogger();
     }
 
-    private final String[] firstSecondThirdEmojis = {"\uD83E\uDD47", "\uD83E\uDD48", "\uD83E\uDD49"};
+    private final String[] firstSecondThirdEmojis = { "\uD83E\uDD47", "\uD83E\uDD48", "\uD83E\uDD49" };
 
     public SendMessage scoreboard(SendMessage messageToBeSent) {
         Teams teams = jsonDigestService.getTeams(jsonDigestService.readTeamdataJsonFile());
         StringBuilder message = new StringBuilder();
 
-        Map<String, Integer> sortedMap = teams.toList().stream().sorted(Comparator.comparing(Team::getTotalScore).reversed())
+        Map<String, Integer> sortedMap = teams.toList().stream()
+                .sorted(Comparator.comparing(Team::getTotalScore).reversed())
                 .collect(Collectors.toMap(Team::getName, Team::getTotalScore, (t1, t2) -> t1, LinkedHashMap::new));
 
         int position = 0;
@@ -84,23 +89,16 @@ public class Commands {
     }
 
     public SendMessage help(SendMessage messageToBeSent) {
-        try {
-            File file = new File("./src/main/resources/commands.properties");
-            FileReader fr = new FileReader(file);
-            BufferedReader br = new BufferedReader(fr);
+        String commands = "/help - Available commands\n" +
+                "/team {teamName} - Scores of the given team\n" +
+                "/scoreboard - The score for each team\n" +
+                "/start - Susbcribe to receive updates\n" +
+                "/web - Web link\n";
+        StringBuilder bld = new StringBuilder(commands);
 
-            String line;
-            StringBuilder bld = new StringBuilder();
-            while ((line = br.readLine()) != null) {
-                String aux = "/" + line + "\n";
-                bld.append(aux);
-            }
+        logger.debug("Commands:\n" + bld.toString());
+        messageToBeSent.setText(bld.toString());
 
-            messageToBeSent.setText(bld.toString());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return messageToBeSent;
     }
 }

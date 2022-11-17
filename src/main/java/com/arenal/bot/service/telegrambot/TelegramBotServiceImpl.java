@@ -133,8 +133,9 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
         SendMessage messageToBeSent = new SendMessage();
         String chatId = update.getMessage().getChatId().toString();
         messageToBeSent.setChatId(chatId);
-
+        ;
         String aux = update.getMessage().getText().toString();
+        logger.debug("message sent = " + aux);
         String[] updateReceived = aux.split(" ");
 
         switch (updateReceived[0]) {
@@ -157,7 +158,7 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
                             teamName += elem + " ";
                         }
                     }
-                    commands.team(messageToBeSent, teamName.trim());
+                    commands.team(messageToBeSent, teamName.trim().toUpperCase());
                 }
                 break;
             case "/web":
