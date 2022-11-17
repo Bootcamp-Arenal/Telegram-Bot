@@ -46,11 +46,19 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.microsoft.azure/azure-support -->
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-aws-context</artifactId>
-            <version>2.2.6.RELEASE</version>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>azure-support</artifactId>
+            <version>0.1.8</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.azure.spring/spring-cloud-azure-starter -->
+        <dependency>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>spring-cloud-azure-starter</artifactId>
+            <version>4.4.1</version>
+        </dependency>
+
     </dependencies>
 
     <build>

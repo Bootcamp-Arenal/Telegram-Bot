@@ -8,18 +8,10 @@ To set up the bot, add in bot.info file the bot's username and token as bot.user
 
 ## Database
 
-
-
 We are using PostgreSQL 15.1 to achieve data persistence of chat ids.
-
-
 
 ### Database installation
 
-
-
 To install the database, first you need to download the installer from https://www.postgresql.org/download/. Then you install it with the default properties taking into consideration the password for user postgres you set up.
 
-
-
-Then you type the following command ```psql -U postgres``` to access the database of user postgres. After entering the password, you need to create a new user with ```create user telegrambot with password 'telegrambot'``` and create a new database with ```create database telegrambot owner 'telegrambot'```. Finally, you leave the terminal entering ```\q```.
+Then you type the following command ```psql -U postgres``` to access the database of user postgres. After entering the password, you need to create a new user with ```create user telegrambot with password 'telegrambot';``` and create a new database with ```create database telegrambot owner 'telegrambot';```. Finally, you leave the terminal entering ```\q```.
