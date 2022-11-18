@@ -29,14 +29,16 @@ public class JsonDigestServiceImpl implements JsonDigestService {
 	private static final String BASE_URL = "https://raw.githubusercontent.com/danibanez/bootcampsolera/";
 	private static final String URL = BASE_URL + BRANCH_MODIFIED + "/" + FILE_PATH;
 
-	@Autowired
 	private ColorLogger logger;
 
+	public JsonDigestServiceImpl() {
+		logger = new ColorLogger();
+	}
 	@Override
 	public Teams getTeams(String jsonFile) {
 		Teams teamData = new Teams();
 		ObjectMapper mapper = new ObjectMapper();
-
+		logger.debug("jsonFile is:\n" + jsonFile);
 		try {
 			teamData = mapper.readValue(jsonFile, Teams.class);
 		} catch (JsonProcessingException e) {
@@ -52,6 +54,7 @@ public class JsonDigestServiceImpl implements JsonDigestService {
 		if (!isTeamdataModified(githubJsonFile)) {
 			throw new FileNotModifiedException(FILE + " file was not modified");
 		}
+		logger.debug("gotIntoJsonTeamData");
 		return readTeamdataJsonFile();
 	}
 
@@ -87,6 +90,7 @@ public class JsonDigestServiceImpl implements JsonDigestService {
 			while ((line = br.readLine()) != null) {
 				file += line + "\n";
 			}
+			logger.debug("Json file:\n" + file);
 		} catch (IOException e) {
 			logger.error("Error reading Json file");
 			e.printStackTrace();
