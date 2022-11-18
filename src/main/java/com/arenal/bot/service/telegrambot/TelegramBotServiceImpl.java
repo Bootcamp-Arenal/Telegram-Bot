@@ -43,6 +43,7 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
     private final String HELP = "/help";
     private final String TEAM = "/team";
     private final String SCOREBOARD = "/scoreboard";
+    private final String DETAIL_SCORE = "/detailscore";
     private final String WEB = "/web";
     private final String WEB_MESSAGE = "Web link: https://scoring-app-nine.vercel.app/";
     private final String INVALID_COMMAND_MESSAGE = "Select a valid command. Use /help to get all available commands";
@@ -151,7 +152,7 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
         String commandReceived = update.getMessage().getText().toString();
 
         String[] commandReceivedSplit = commandReceived.split(" ");
-        
+
         if (commandReceived.contains(GROUP_APPEND)) {
             commandReceivedSplit = commandReceived.split("@")[0].split(" ");
         }
@@ -166,6 +167,9 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
                 break;
             case SCOREBOARD:
                 commands.scoreboard(messageToBeSent);
+                break;
+            case DETAIL_SCORE:
+                commands.detailedScoreboard(messageToBeSent);
                 break;
             case TEAM:
                 if (commandReceivedSplit.length < 2) {
@@ -219,7 +223,7 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
             for (int i = 0; i < winnersCount - 1; i++) {
                 logger.debug(winners.get(i).getName().toString());
                 message.append(winners.get(i).getName());
-                if (i != winnersCount-2) {
+                if (i != winnersCount - 2) {
                     message.append(", ");
                 }
             }

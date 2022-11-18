@@ -30,8 +30,8 @@ public class Commands {
 
     private final String[] inPodiumEmojis = { "\uD83E\uDD47", "\uD83E\uDD48", "\uD83E\uDD49" };
 
-    private String getTeamEmoji(Map<String, String> teamNameToEmoji, Map.Entry<String, Integer> team) {
-        return teamNameToEmoji.get(team.getKey());
+    private String getTeamEmoji(Map<String, String> teamNameToEmoji, Map.Entry<Team, Integer> team) {
+        return teamNameToEmoji.get(team.getKey().getName());
     }
 
     private Map<String, String> getTeamNameToEmoji() {
@@ -50,17 +50,21 @@ public class Commands {
         return teamNameToEmoji;
     }
 
+    private Map<Team, Integer> teamsSortedMap(Teams teams) {
+        return teams.toList().stream()
+                .sorted(Comparator.comparing(Team::getTotalScore).reversed())
+                .collect(Collectors.toMap(t -> t, Team::getTotalScore, (t1, t2) -> t1, LinkedHashMap::new));
+    }
+
     public SendMessage scoreboard(SendMessage messageToBeSent) {
         Teams teams = jsonDigestService.getTeams(jsonDigestService.readTeamdataJsonFile());
         StringBuilder message = new StringBuilder();
 
-        Map<String, Integer> sortedMap = teams.toList().stream()
-                .sorted(Comparator.comparing(Team::getTotalScore).reversed())
-                .collect(Collectors.toMap(Team::getName, Team::getTotalScore, (t1, t2) -> t1, LinkedHashMap::new));
+        Map<Team, Integer> sortedMap = teamsSortedMap(teams);
 
         Map<String, String> teamNameToEmoji = getTeamNameToEmoji();
         int index = 0;
-        for (Map.Entry<String, Integer> team : sortedMap.entrySet()) {
+        for (Map.Entry<Team, Integer> team : sortedMap.entrySet()) {
             if (index <= 2) {
                 message.append(inPodiumEmojis[index] + "  ");
             } else if (index <= 9) {
@@ -73,7 +77,7 @@ public class Commands {
                     ? " " + getTeamEmoji(teamNameToEmoji, team)
                     : "Error")
                     .append(" ")
-                    .append(team.getKey())
+                    .append(team.getKey().getName())
                     .append(" : ")
                     .append(team.getValue() + "\n");
             // .append(" points\n");
@@ -83,19 +87,47 @@ public class Commands {
         return messageToBeSent;
     }
 
+    public SendMessage detailedScoreboard(SendMessage messageToBeSent) {
+        messageToBeSent.enableHtml(true);
+        Teams teams = jsonDigestService.getTeams(jsonDigestService.readTeamdataJsonFile());
+        StringBuilder message = new StringBuilder();
+
+        Map<Team, Integer> sortedMap = teamsSortedMap(teams);
+
+        Map<String, String> teamNameToEmoji = getTeamNameToEmoji();
+        for (Map.Entry<Team, Integer> team : sortedMap.entrySet()) {
+            String teamName = team.getKey().getName();
+            Integer teamScore = team.getValue();
+
+            message.append(getTeamEmoji(teamNameToEmoji, team))
+                    .append(" <b>")
+                    .append(teamName)
+                    .append(" | ")
+                    .append(teamScore)
+                    .append("</b>\n");
+            for (Activity activity : team.getKey().getActividades()) {
+                message.append(activity.toString()).append("\n");
+            }
+            message.append("\n");
+        }
+        messageToBeSent.setText(message.toString());
+
+        return messageToBeSent;
+    }
+
     public SendMessage team(SendMessage messageToBeSent, String teamName) {
         messageToBeSent.enableHtml(true);
 
         Teams teams = jsonDigestService.getTeams(jsonDigestService.readTeamdataJsonFile());
         StringBuilder message = new StringBuilder();
         Optional<Team> teamOptional = teams.toList().stream().filter(team -> team.getName().equals(teamName)).findAny();
-        
+
         Map<String, String> teamNameToEmoji = getTeamNameToEmoji();
         if (teamOptional.isEmpty()) {
             messageToBeSent.setText("😢 I couldn't find " + teamName + ". Make sure the team's name is correct");
             return messageToBeSent;
         }
-        
+
         Team team = teamOptional.get();
         message.append(teamNameToEmoji.get(teamName))
                 .append(" <b>")
@@ -128,6 +160,7 @@ public class Commands {
         String commands = "/help - Available commands\n" +
                 "/team example team - The team's score\n" +
                 "/scoreboard - Each team's score\n" +
+                "/scoreboard -d - Each team's score and activities\n" +
                 "/start - Subscribe to receive updates\n" +
                 "/web - Web link\n";
         StringBuilder bld = new StringBuilder(commands);
