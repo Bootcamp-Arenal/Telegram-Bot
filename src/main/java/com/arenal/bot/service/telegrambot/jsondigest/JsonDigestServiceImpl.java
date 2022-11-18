@@ -26,7 +26,7 @@ public class JsonDigestServiceImpl implements JsonDigestService {
 	private static final String BRANCH_MODIFIED = "main";
 	private static final String FILE = "teamdata.json";
 	private static final String FILE_PATH = "src/data/" + FILE;
-	private static final String BASE_URL = "https://raw.githubusercontent.com/Bootcamp-Arenal/Scoring-App/";
+	private static final String BASE_URL = "https://raw.githubusercontent.com/danibanez/bootcampsolera/";
 	private static final String URL = BASE_URL + BRANCH_MODIFIED + "/" + FILE_PATH;
 
 	@Autowired

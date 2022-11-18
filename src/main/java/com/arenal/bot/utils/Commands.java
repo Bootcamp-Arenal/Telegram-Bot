@@ -39,6 +39,19 @@ public class Commands {
         Teams teams = jsonDigestService.getTeams(jsonDigestService.readTeamdataJsonFile());
         StringBuilder message = new StringBuilder();
 
+        Map<String, String> teamNameToEmoji = new LinkedHashMap<>();
+
+        teamNameToEmoji.put("ARENAL+", "⛱");
+        teamNameToEmoji.put("EQUIPO AA", "🍻");
+        teamNameToEmoji.put("LOS PIBES DEL FONDO", "🥘");
+        teamNameToEmoji.put("CRUCE DE BANDERAS", "🎌");
+        teamNameToEmoji.put("LUNERA", "🌙");
+        teamNameToEmoji.put("DEGARA", "🚍");
+        teamNameToEmoji.put("CODEPIRINHA", "🍹");
+        teamNameToEmoji.put("JSLOVERS", "👩🏽‍💻");
+        teamNameToEmoji.put("BUGABIT", "🐛");
+        teamNameToEmoji.put("VALLE SILICONA", "⛰");
+
         Map<String, Integer> sortedMap = teams.toList().stream()
                 .sorted(Comparator.comparing(Team::getTotalScore).reversed())
                 .collect(Collectors.toMap(Team::getName, Team::getTotalScore, (t1, t2) -> t1, LinkedHashMap::new));
@@ -48,6 +61,8 @@ public class Commands {
             message.append((position <= 2) ? firstSecondThirdEmojis[position++] : ++position + "º -")
                     .append(" ")
                     .append(team.getKey())
+                    .append(!teamNameToEmoji.get(team.getKey()).isEmpty() ? " " + teamNameToEmoji.get(team.getKey())
+                            : "Error")
                     .append(" : ")
                     .append(team.getValue())
                     .append(" puntos\n");

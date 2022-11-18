@@ -39,6 +39,12 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
     private ChatRepository chatRepository;
     private JsonDigestService jsonDigestService;
 
+    private final String START = "/start";
+    private final String HELP = "/help";
+    private final String TEAM = "/team";
+    private final String SCOREBOARD = "/scoreboard";
+    private final String WEB = "/web";
+
     @Autowired
     public TelegramBotServiceImpl(ChatRepository chatRepository, JsonDigestService jsonDigestService) {
         super();
@@ -128,6 +134,7 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
      */
     @Override
     public void onUpdateReceived(Update update) {
+        final String GROUP_APPEND = "@" + username;
         Commands commands = new Commands(chatRepository, jsonDigestService);
 
         SendMessage messageToBeSent = new SendMessage();
@@ -135,40 +142,34 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
         messageToBeSent.setChatId(chatId);
         ;
         String aux = update.getMessage().getText().toString();
-        logger.debug("message sent = " + aux);
+        logger.debug("user sent = " + aux);
         String[] updateReceived = aux.split(" ");
 
-        switch (updateReceived[0]) {
-            case "/start":
-                commands.start(messageToBeSent, chatId);
-                break;
-            case "/help":
-                commands.help(messageToBeSent);
-                break;
-            case "/scoreboard":
-                commands.scoreboard(messageToBeSent);
-                break;
-            case "/team":
-                if (updateReceived.length < 2) {
-                    messageToBeSent.setText("\uD83D\uDE00Incorrect format. Please use \"/team teamName\" ");
-                } else {
-                    String teamName = "";
-                    for (String elem : updateReceived) {
-                        if (!elem.equals(updateReceived[0])) {
-                            teamName += elem + " ";
-                        }
+        if (updateReceived[0].equals(START) || updateReceived[0].equals(START + GROUP_APPEND)) {
+            commands.start(messageToBeSent, chatId);
+        } else if (updateReceived[0].equals(HELP) || updateReceived[0].equals(HELP + GROUP_APPEND)) {
+            commands.help(messageToBeSent);
+        } else if (updateReceived[0].equals(TEAM) || updateReceived[0].equals(TEAM + GROUP_APPEND)) {
+            if (updateReceived.length < 2) {
+                messageToBeSent.setText("\uD83D\uDE00Incorrect format. Please use \"/team teamName\" ");
+            } else {
+                String teamName = "";
+                String[] groupSlipt = aux.split("@")[0].split(" ");
+                for (String elem : groupSlipt) {
+                    if (!elem.equals(updateReceived[0])) {
+                        teamName += elem + " ";
                     }
-                    commands.team(messageToBeSent, teamName.trim().toUpperCase());
                 }
-                break;
-            case "/web":
-                messageToBeSent.setText("El enlace es: https://scoring-app-nine.vercel.app/");
-                break;
-            default:
-                messageToBeSent.setText("Select a valid command. Type /help to know what they are");
-                break;
+                commands.team(messageToBeSent, teamName.trim().toUpperCase());
+            }
+        } else if (updateReceived[0].equals(SCOREBOARD) || updateReceived[0].equals(SCOREBOARD + GROUP_APPEND)) {
+            commands.scoreboard(messageToBeSent);
+        } else if (updateReceived[0].equals(WEB) || updateReceived[0].equals(WEB + GROUP_APPEND)) {
+            messageToBeSent.setText("El enlace es: https://scoring-app-nine.vercel.app/");
+        } else {
+            messageToBeSent.setText("Select a valid command. Type /help to know what they are");
         }
-
+        logger.debug("Message to be sent:\n" + messageToBeSent.getText());
         try {
             execute(messageToBeSent);
         } catch (TelegramApiException e) {
@@ -204,45 +205,6 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
             message.append(" y ");
             message.append(winners.get(winnersCount - 1).getName());
             message.append(", ");
-
-
-            /*for (Team team : winners) {
-                message.append(team.getName());
-                Team lastInWinners = winners.get(winners.size() - 1);
-                if (winners.size() == 2) {
-                    boolean isLastInWinners = team.equals(lastInWinners);
-                    if (!isLastInWinners) {
-                        boolean isSecondLastInWinners = team.equals(secondLastInWinners);
-                        if (isSecondLastInWinners) {
-                            message.append(" y ");
-                            continue;
-                        }
-                        message.append(", ");
-                    }
-                } else {
-                    Team secondLastInWinners = winners.get(winners.size() - 2);
-                    boolean isLastInWinners = team.equals(lastInWinners);
-                    if (!isLastInWinners) {
-                        boolean isSecondLastInWinners = team.equals(secondLastInWinners);
-                        if (isSecondLastInWinners) {
-                            message.append(" y ");
-                            continue;
-                        }
-                        message.append(", ");
-                    }
-                }
-
-
-                boolean isLastInWinners = team.equals(lastInWinners);
-                if (!isLastInWinners) {
-                    boolean isSecondLastInWinners = team.equals(secondLastInWinners);
-                    if (isSecondLastInWinners) {
-                        message.append(" y ");
-                        continue;
-                    }
-                    message.append(", ");
-                }
-            }*/
         } else {
             Team team = winners.get(0);
             message.append("El equipo que va ganando es " + team.getName());

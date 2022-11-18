@@ -35,3 +35,4 @@ build/
 
 ### Bot information ###
 src/main/resources/bot.info
+/target/classes/bot.info
