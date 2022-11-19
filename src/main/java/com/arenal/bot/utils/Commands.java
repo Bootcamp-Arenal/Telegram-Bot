@@ -56,7 +56,7 @@ public class Commands {
                 .collect(Collectors.toMap(t -> t, Team::getTotalScore, (t1, t2) -> t1, LinkedHashMap::new));
     }
 
-    public SendMessage scoreboard(SendMessage messageToBeSent) {
+    public void scoreboard(SendMessage messageToBeSent) {
         Teams teams = jsonDigestService.getTeams(jsonDigestService.readTeamdataJsonFile());
         StringBuilder message = new StringBuilder();
 
@@ -80,14 +80,12 @@ public class Commands {
                     .append(team.getKey().getName())
                     .append(" : ")
                     .append(team.getValue() + "\n");
-            // .append(" points\n");
             index++;
         }
         messageToBeSent.setText(String.valueOf(message));
-        return messageToBeSent;
     }
 
-    public SendMessage detailedScoreboard(SendMessage messageToBeSent) {
+    public void detailScore(SendMessage messageToBeSent) {
         messageToBeSent.enableHtml(true);
         Teams teams = jsonDigestService.getTeams(jsonDigestService.readTeamdataJsonFile());
         StringBuilder message = new StringBuilder();
@@ -111,11 +109,22 @@ public class Commands {
             message.append("\n");
         }
         messageToBeSent.setText(message.toString());
-
-        return messageToBeSent;
     }
 
-    public SendMessage team(SendMessage messageToBeSent, String teamName) {
+    public void team(SendMessage messageToBeSent, String[] commandReceivedSplit) {
+        if (commandReceivedSplit.length < 2) {
+            messageToBeSent.setText("😵 Incorrect format. Please use /team example team");
+            return;
+        }
+
+        StringBuilder teamNameSB = new StringBuilder();
+        for (String elem : commandReceivedSplit) {
+            if (!elem.equals(commandReceivedSplit[0])) {
+                teamNameSB.append(elem + " ");
+            }
+        }
+        String teamName = teamNameSB.toString().trim().toUpperCase();
+        // return team(messageToBeSent, teamName.toString().trim().toUpperCase());
         messageToBeSent.enableHtml(true);
 
         Teams teams = jsonDigestService.getTeams(jsonDigestService.readTeamdataJsonFile());
@@ -125,7 +134,7 @@ public class Commands {
         Map<String, String> teamNameToEmoji = getTeamNameToEmoji();
         if (teamOptional.isEmpty()) {
             messageToBeSent.setText("😢 I couldn't find " + teamName + ". Make sure the team's name is correct");
-            return messageToBeSent;
+            return;
         }
 
         Team team = teamOptional.get();
@@ -140,34 +149,28 @@ public class Commands {
             message.append(activity.toString()).append("\n");
         }
         messageToBeSent.setText(message.toString());
-
-        return messageToBeSent;
-
     }
 
-    public SendMessage start(SendMessage messageToBeSent, String chatId) {
+    public void start(SendMessage messageToBeSent, String chatId) {
         boolean isChatIdPresent = chatRepository.findByChatId(chatId).isPresent();
         if (isChatIdPresent) {
             messageToBeSent.setText("😵 You're already subscribed to the service");
-        } else {
-            chatRepository.save(new Chat(chatId));
-            messageToBeSent.setText("Hello World! 🎉\nYou're now subscribed to the service");
+            return;
         }
-        return messageToBeSent;
+        chatRepository.save(new Chat(chatId));
+        messageToBeSent.setText("Hello World! 🎉\nYou're now subscribed to the service");
     }
 
-    public SendMessage help(SendMessage messageToBeSent) {
+    public void help(SendMessage messageToBeSent) {
         String commands = "/help - Available commands\n" +
                 "/team example team - The team's score\n" +
                 "/scoreboard - Each team's score\n" +
-                "/scoreboard -d - Each team's score and activities\n" +
+                "/detailscore - Each team's score and activities\n" +
                 "/start - Subscribe to receive updates\n" +
                 "/web - Web link\n";
         StringBuilder bld = new StringBuilder(commands);
 
         logger.debug("Commands:\n" + bld.toString());
         messageToBeSent.setText(bld.toString());
-
-        return messageToBeSent;
     }
 }

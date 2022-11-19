@@ -3,7 +3,9 @@ package com.arenal.bot.service.telegrambot;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.arenal.bot.utils.Commands;
@@ -151,50 +153,32 @@ public class TelegramBotServiceImpl extends TelegramLongPollingBot implements Te
 
         String commandReceived = update.getMessage().getText().toString();
 
-        String[] commandReceivedSplit = commandReceived.split(" ");
+        String[] commandReceivedSplit = commandReceived.contains(GROUP_APPEND)
+                ? commandReceived.split("@")[0].split(" ")
+                : commandReceived.split(" ");
 
-        if (commandReceived.contains(GROUP_APPEND)) {
-            commandReceivedSplit = commandReceived.split("@")[0].split(" ");
-        }
         String commandReceivedCleaned = commandReceivedSplit[0];
         logger.debug("user sent = " + commandReceived);
-        switch (commandReceivedCleaned) {
-            case START:
-                commands.start(messageToBeSent, chatId);
-                break;
-            case HELP:
-                commands.help(messageToBeSent);
-                break;
-            case SCOREBOARD:
-                commands.scoreboard(messageToBeSent);
-                break;
-            case DETAIL_SCORE:
-                commands.detailedScoreboard(messageToBeSent);
-                break;
-            case TEAM:
-                if (commandReceivedSplit.length < 2) {
-                    messageToBeSent.setText("😵 Incorrect format. Please use /team example team");
-                } else {
-                    StringBuilder teamName = new StringBuilder();
-                    for (String elem : commandReceivedSplit) {
-                        if (!elem.equals(commandReceivedSplit[0])) {
-                            teamName.append(elem + " ");
-                        }
-                    }
-                    commands.team(messageToBeSent, teamName.toString().trim().toUpperCase());
-                }
-                break;
-            case WEB:
-                messageToBeSent.setText(WEB_MESSAGE);
-                break;
-            default:
-                messageToBeSent.setText(INVALID_COMMAND_MESSAGE);
-                break;
+
+        Map<String, Runnable> commandMap = new HashMap<>();
+        commandMap.put(START, () -> commands.start(messageToBeSent, chatId));
+        commandMap.put(HELP, () -> commands.help(messageToBeSent));
+        commandMap.put(SCOREBOARD, () -> commands.scoreboard(messageToBeSent));
+        commandMap.put(DETAIL_SCORE, () -> commands.detailScore(messageToBeSent));
+        commandMap.put(WEB, () -> messageToBeSent.setText(WEB_MESSAGE));
+        commandMap.put(TEAM, () -> commands.team(messageToBeSent, commandReceivedSplit));
+
+        if(commandMap.containsKey(commandReceivedCleaned)) {
+            commandMap.get(commandReceivedCleaned).run();
+        } else {
+            messageToBeSent.setText(INVALID_COMMAND_MESSAGE);
         }
+
         logger.debug("Message to be sent:\n" + messageToBeSent.getText());
         try {
             execute(messageToBeSent);
         } catch (TelegramApiException e) {
+            logger.error("The message " + messageToBeSent + " could not be sent");
             e.printStackTrace();
         }
     }
